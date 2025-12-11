@@ -21,7 +21,7 @@ Your code doesn't crash. Your users don't wait. It just works.
 Clone the repository and install locally:
 
 ```bash
-git clone https://github.com/yourusername/GoodbyeQuota.git
+git clone https://github.com/cmpdchtr/GoodbyeQuota.git
 cd GoodbyeQuota
 pip install .
 ```
