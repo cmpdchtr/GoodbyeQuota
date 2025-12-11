@@ -30,6 +30,8 @@ class QuotaFreeModel:
         retries = 0
         while retries < self.client.max_retries:
             current_key = self.client._configure_current_key()
+            # Re-instantiate the model to ensure it picks up the new key configuration
+            self._model = genai.GenerativeModel(self.model_name, **self.model_kwargs)
             try:
                 return self._model.generate_content(*args, **kwargs)
             except ResourceExhausted:
@@ -71,6 +73,12 @@ class QuotaFreeChat:
                 self.model.client.key_manager.report_exhausted(current_key)
                 retries += 1
                 print(f"Quota exceeded for key ...{current_key[-4:]}. Retrying with new key...")
+                
+                # Recreate the chat session with the new key, preserving history
+                current_history = self._chat.history
+                self.model._model = genai.GenerativeModel(self.model.model_name, **self.model.model_kwargs)
+                self._chat = self.model._model.start_chat(history=current_history)
+                
             except Exception as e:
                 raise e
         
